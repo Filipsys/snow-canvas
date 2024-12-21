@@ -32,24 +32,10 @@ const initialize = () => {
     }
 
     fall() {
-      const fadeOutTime = 1000;
-      setTimeout(() => {
-        setTimeout(() => {
-          setInterval(() => {
-            this.opacity -= 0.01;
-
-            context.fillStyle = `rgb(0 0 0 / ${this.opacity * 100}%)`;
-          }, fadeOutTime / 10);
-        }, fadeOutTime);
-
-        setTimeout(() => {
-          particles.splice(particles.indexOf(this.id), 1);
-        }, fadeOutTime * 2);
-      }, this.lifetime);
-
       this.x += this.sway;
       this.y += this.speed;
 
+      context.fillStyle = `rgb(0 0 0 / ${this.opacity * 100}%)`;
       context.beginPath();
       context.arc(this.x, this.y, this.size, 0, Math.PI * 2, true);
       context.fill();
@@ -63,9 +49,21 @@ const initialize = () => {
   particles.push(new Particle(3, 180, 60, 3, 1, 3000, 1, 0.2));
   particles.push(new Particle(4, 240, 60, 2, 1, 3000, 2, -0.3));
 
+  const updateLoop = () => {
+    console.log("In update loop");
+
+    particles.forEach((particle) => {
+      if (particle.opacity < 0) return particles.splice(particles.indexOf(this.id), 1);
+
+      particle.opacity -= 0.01;
+    });
+  };
+
   const animationLoop = () => {
     requestAnimationFrame(animationLoop);
     console.log("In animation loop");
+
+    updateLoop();
 
     context.clearRect(0, 0, canvasWidth, canvasHeight);
     context.save();
