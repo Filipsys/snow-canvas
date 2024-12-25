@@ -5,6 +5,8 @@ if (!canvasElement || !context) throw new Error("Canvas-related issue found");
 
 const canvasWidth = context.canvas.width;
 const canvasHeight = context.canvas.height;
+const canvasColor = "blue";
+const particlesColor = "#fff"; // Must be hex
 const timeBetweenParticles = 100;
 let numberOfTotalParticlesLogged = 0;
 let currentTimeBetween = 0;
@@ -59,10 +61,17 @@ const updateLoop = () => {
 };
 
 const drawLoop = () => {
-  context.clearRect(0, 0, canvasWidth, canvasHeight);
+  context.fillStyle = canvasColor;
+  context.fillRect(0, 0, canvasWidth, canvasHeight);
+
+  // TODO
+  // const floatToHex = (floatValue) => {
+  //   const hexList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+  //   return floatToHex;
+  // };
 
   particles.forEach((particle) => {
-    context.fillStyle = `rgba(0, 0, 0, ${particle.opacity})`;
+    context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
     context.beginPath();
     context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2, true);
     context.fill();
