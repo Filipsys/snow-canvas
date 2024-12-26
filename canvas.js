@@ -5,8 +5,8 @@ if (!canvasElement || !context) throw new Error("Canvas-related issue found");
 
 const canvasWidth = context.canvas.width;
 const canvasHeight = context.canvas.height;
-const canvasColor = "blue";
-const particlesColor = "#fff"; // Must be hex
+const canvasColor = "white";
+const particlesColor = "#0000ff"; // Hex color value
 const timeBetweenParticles = 100;
 let numberOfTotalParticlesLogged = 0;
 let currentTimeBetween = 0;
@@ -65,13 +65,21 @@ const drawLoop = () => {
   context.fillRect(0, 0, canvasWidth, canvasHeight);
 
   // TODO
-  // const floatToHex = (floatValue) => {
-  //   const hexList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
-  //   return floatToHex;
-  // };
+  const hexToRGB = (hexColor) => {
+    const hexList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+    hexColor = hexColor.toUpperCase();
+
+    return {
+      red: hexList.indexOf(hexColor.slice(1, 3).slice(1)) * 16 + hexList.indexOf(hexColor.slice(1, 3).slice(-1)),
+      green: hexList.indexOf(hexColor.slice(3, 5).slice(1)) * 16 + hexList.indexOf(hexColor.slice(3, 5).slice(-1)),
+      blue: hexList.indexOf(hexColor.slice(5, 7).slice(1)) * 16 + hexList.indexOf(hexColor.slice(5, 7).slice(-1)),
+    };
+  };
 
   particles.forEach((particle) => {
-    context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+    const { red, green, blue } = hexToRGB(particlesColor);
+
+    context.fillStyle = `rgba(${red}, ${green}, ${blue}, ${particle.opacity})`;
     context.beginPath();
     context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2, true);
     context.fill();
