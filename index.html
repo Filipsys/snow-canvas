@@ -2,8 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Snow canvas</title>
+
     <style>
       canvas {
         border: 1px solid black;
@@ -29,7 +31,7 @@
           <input type="range" name="Lifetime" id="lifetime-slider" min="100" max="5000" step="0.01" value="1000" />
         </p>
         <p style="margin: 1px">
-          Amount: <input type="range" name="Amount" id="amount-slider" min="1" max="5000" step="0.01" value="100" />
+          Amount: <input type="range" name="Amount" id="amount-slider" min="1" max="10000" step="0.01" value="100" />
         </p>
         <p style="margin: 1px">
           Maximal opacity:
@@ -64,6 +66,6 @@
       </div>
     </div>
 
-    <script src="canvas.js"></script>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

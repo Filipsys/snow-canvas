@@ -21,32 +21,59 @@ let canvasColor = "#FFFFFF";
 let particlesColor = "#000000";
 let particleDirection = "right";
 
-sizeSlider.addEventListener("input", (event) => (sizeVariable = parseFloat(event.target.value)));
-speedSlider.addEventListener("input", (event) => (speedVariable = parseFloat(event.target.value)));
-swaySlider.addEventListener("input", (event) => (swayVariable = parseFloat(event.target.value)));
-lifetimeSlider.addEventListener("input", (event) => (lifetimeVariable = parseFloat(event.target.value)));
-amountSlider.addEventListener("input", (event) => (amountVariable = parseInt(event.target.value)));
-maximalOpacitySlider.addEventListener("input", (event) => (maximalOpacity = parseFloat(event.target.value)));
-randomnessSlider.addEventListener("input", (event) => (randomnessVariable = parseFloat(event.target.value)));
-particleColorInput.addEventListener("input", (event) => (particlesColor = event.target.value));
-backgroundColorInput.addEventListener("input", (event) => (canvasColor = event.target.value));
-leftDirectionButton.addEventListener("click", () => (particleDirection = "left"));
-rightDirectionButton.addEventListener("click", () => (particleDirection = "right"));
+sizeSlider?.addEventListener("input", (event) => (sizeVariable = parseFloat((event.target as HTMLInputElement).value)));
+speedSlider?.addEventListener(
+  "input",
+  (event) => (speedVariable = parseFloat((event.target as HTMLInputElement).value))
+);
+swaySlider?.addEventListener("input", (event) => (swayVariable = parseFloat((event.target as HTMLInputElement).value)));
+lifetimeSlider?.addEventListener(
+  "input",
+  (event) => (lifetimeVariable = parseFloat((event.target as HTMLInputElement).value))
+);
+amountSlider?.addEventListener(
+  "input",
+  (event) => (amountVariable = parseInt((event.target as HTMLInputElement).value))
+);
+maximalOpacitySlider?.addEventListener(
+  "input",
+  (event) => (maximalOpacity = parseFloat((event.target as HTMLInputElement).value))
+);
+randomnessSlider?.addEventListener(
+  "input",
+  (event) => (randomnessVariable = parseFloat((event.target as HTMLInputElement).value))
+);
+particleColorInput?.addEventListener("input", (event) => (particlesColor = (event.target as HTMLInputElement).value));
+backgroundColorInput?.addEventListener("input", (event) => (canvasColor = (event.target as HTMLInputElement).value));
+leftDirectionButton?.addEventListener("click", () => (particleDirection = "left"));
+rightDirectionButton?.addEventListener("click", () => (particleDirection = "right"));
 
-const canvasElement = document.getElementById("root");
-const context = canvasElement.getContext("2d");
-if (!canvasElement || !context) throw new Error("Canvas-related issue found");
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  opacity: number;
+  lifetime: number;
+  speed: number;
+  sway: number;
+  appearDate: number;
+}
+
+const canvasElement = document.getElementById("root") as HTMLCanvasElement;
+if (!canvasElement) throw new Error("Canvas-related issue found");
+const context = canvasElement.getContext("2d") as CanvasRenderingContext2D;
+if (!context) throw new Error("Canvas-related issue found");
 
 const canvasWidth = context.canvas.width;
 const canvasHeight = context.canvas.height;
 let numberOfTotalParticlesLogged = 0;
-let currentTimeBetween = 0;
-let particles = [];
+let particles: Particle[] = [];
 
-const hexToRGB = (hexColor) => {
+const hexToRGB = (hexColor: string) => {
   const hexList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
   hexColor = hexColor.toUpperCase();
-  let hexColours;
+  let hexColours = { red: "", green: "", blue: "" };
 
   if (hexColor.length == 4) {
     hexColours = {
@@ -70,8 +97,8 @@ const hexToRGB = (hexColor) => {
 };
 
 const generateNewParticle = () => {
+  numberOfTotalParticlesLogged += 1;
   const coinToss = Math.random();
-  numberOfTotalParticlesLogged += 1; // Increase the total particles (using it as the id)
 
   let randomnessApply = randomnessVariable;
   if (randomnessVariable == 0) {
@@ -120,7 +147,7 @@ const updateLoop = () => {
   if (!particles.length) return;
   const currentDate = Date.now();
 
-  const isOutOfBounds = (particle) =>
+  const isOutOfBounds = (particle: Particle) =>
     particle.x + particle.sway < 0 ||
     particle.y + particle.sway < 0 ||
     particle.x + particle.sway > canvasWidth ||
