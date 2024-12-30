@@ -11,7 +11,58 @@
     </style>
   </head>
   <body>
-    <canvas id="root" width="600" height="600"></canvas>
+    <div style="display: flex; flex-direction: row; gap: 20px">
+      <canvas id="root" width="600" height="600"></canvas>
+
+      <div style="display: flex; flex-direction: column">
+        <p style="margin: 1px">
+          Size: <input type="range" name="Size" id="size-slider" min="0.01" max="10" step="0.01" value="1" />
+        </p>
+        <p style="margin: 1px">
+          Speed: <input type="range" name="Speed" id="speed-slider" min="0" max="10" step="0.01" value="3" />
+        </p>
+        <p style="margin: 1px">
+          Sway: <input type="range" name="Sway" id="sway-slider" min="0" max="10" step="0.01" value="0" />
+        </p>
+        <p style="margin: 1px">
+          Lifetime:
+          <input type="range" name="Lifetime" id="lifetime-slider" min="100" max="5000" step="0.01" value="1000" />
+        </p>
+        <p style="margin: 1px">
+          Amount: <input type="range" name="Amount" id="amount-slider" min="1" max="5000" step="0.01" value="100" />
+        </p>
+        <p style="margin: 1px">
+          Maximal opacity:
+          <input
+            type="range"
+            name="Maximal-opacity"
+            id="maximal-opacity-slider"
+            min="0"
+            max="1"
+            step="0.01"
+            value="1"
+          />
+        </p>
+        <p style="margin: 1px">
+          Randomness:
+          <input type="range" name="Randomness" id="randomness-slider" min="0" max="5" step="0.01" value="0" />
+        </p>
+
+        <p style="margin: 1px">
+          Particle colour (hex):
+          <input id="particle-color-input" type="text" maxlength="7" placeholder="#000000" value="#000000" />
+        </p>
+        <p style="margin: 1px">
+          Background colour (hex):
+          <input id="background-color-input" type="text" maxlength="7" placeholder="#FFFFFF" value="#FFFFFF" />
+        </p>
+        <p style="margin: 1px">
+          Snow direction:
+          <button id="direction-left">Left</button>
+          <button id="direction-right">Right</button>
+        </p>
+      </div>
+    </div>
 
     <script src="canvas.js"></script>
   </body>

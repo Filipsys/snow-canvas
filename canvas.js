@@ -1,13 +1,44 @@
+const sizeSlider = document.getElementById("size-slider");
+const speedSlider = document.getElementById("speed-slider");
+const swaySlider = document.getElementById("sway-slider");
+const lifetimeSlider = document.getElementById("lifetime-slider");
+const amountSlider = document.getElementById("amount-slider");
+const maximalOpacitySlider = document.getElementById("maximal-opacity-slider");
+const randomnessSlider = document.getElementById("randomness-slider");
+const particleColorInput = document.getElementById("particle-color-input");
+const backgroundColorInput = document.getElementById("background-color-input");
+const leftDirectionButton = document.getElementById("direction-left");
+const rightDirectionButton = document.getElementById("direction-right");
+
+let sizeVariable = 1;
+let speedVariable = 3;
+let swayVariable = 0;
+let lifetimeVariable = 1000;
+let amountVariable = 1000;
+let maximalOpacity = 1;
+let randomnessVariable = 0;
+let canvasColor = "#FFFFFF";
+let particlesColor = "#000000";
+let particleDirection = "right";
+
+sizeSlider.addEventListener("input", (event) => (sizeVariable = parseFloat(event.target.value)));
+speedSlider.addEventListener("input", (event) => (speedVariable = parseFloat(event.target.value)));
+swaySlider.addEventListener("input", (event) => (swayVariable = parseFloat(event.target.value)));
+lifetimeSlider.addEventListener("input", (event) => (lifetimeVariable = parseFloat(event.target.value)));
+amountSlider.addEventListener("input", (event) => (amountVariable = parseInt(event.target.value)));
+maximalOpacitySlider.addEventListener("input", (event) => (maximalOpacity = parseFloat(event.target.value)));
+randomnessSlider.addEventListener("input", (event) => (randomnessVariable = parseFloat(event.target.value)));
+particleColorInput.addEventListener("input", (event) => (particlesColor = event.target.value));
+backgroundColorInput.addEventListener("input", (event) => (canvasColor = event.target.value));
+leftDirectionButton.addEventListener("click", () => (particleDirection = "left"));
+rightDirectionButton.addEventListener("click", () => (particleDirection = "right"));
+
 const canvasElement = document.getElementById("root");
 const context = canvasElement.getContext("2d");
-
 if (!canvasElement || !context) throw new Error("Canvas-related issue found");
 
 const canvasWidth = context.canvas.width;
 const canvasHeight = context.canvas.height;
-const canvasColor = "white";
-const particlesColor = "#000"; // Hex color value
-const timeBetweenParticles = 100;
 let numberOfTotalParticlesLogged = 0;
 let currentTimeBetween = 0;
 let particles = [];
@@ -29,8 +60,6 @@ const hexToRGB = (hexColor) => {
       green: hexColor.slice(3, 5),
       blue: hexColor.slice(5, 7),
     };
-  } else {
-    throw new Error("Wrong hex value!");
   }
 
   return {
@@ -44,26 +73,48 @@ const generateNewParticle = () => {
   const coinToss = Math.random();
   numberOfTotalParticlesLogged += 1; // Increase the total particles (using it as the id)
 
+  let randomnessApply = randomnessVariable;
+  if (randomnessVariable == 0) {
+    randomnessApply = 1;
+  } else {
+    randomnessApply = randomnessVariable * Math.random();
+    Math.random() >= 0.5 ? null : (randomnessApply = -randomnessApply);
+  }
+
   particles.push({
     id: numberOfTotalParticlesLogged,
-    x: coinToss >= 0.5 ? canvasWidth * Math.random() : 0,
-    y: coinToss < 0.5 ? canvasHeight * Math.random() : 0,
-    size: 3 * Math.random() + 0.01,
+    x:
+      particleDirection == "right"
+        ? coinToss >= 0.5
+          ? canvasWidth * Math.random()
+          : 0
+        : coinToss >= 0.5
+        ? canvasWidth * Math.random()
+        : canvasWidth,
+    y:
+      particleDirection == "right"
+        ? coinToss < 0.5
+          ? canvasHeight * Math.random()
+          : 0
+        : coinToss < 0.5
+        ? canvasHeight * Math.random()
+        : 0,
+
+    size: sizeVariable + (randomnessApply > 0 ? randomnessApply : -randomnessApply),
     opacity: 0,
-    lifetime: 2000 * Math.random() + 1000,
-    speed: 2 * Math.random() + 1,
-    sway: 1 * Math.random() + 1,
+    lifetime: lifetimeVariable,
+    speed: speedVariable + randomnessApply,
+    sway: swayVariable + randomnessApply,
     appearDate: Date.now(),
   });
 };
 
 const updateLoop = () => {
   // Check if a new particle should be made
-  if (currentTimeBetween < timeBetweenParticles) {
-    currentTimeBetween += 10;
-  } else {
-    currentTimeBetween = 0;
-    generateNewParticle();
+  if (particles.length < amountVariable) {
+    for (let i = 0; i < amountVariable - particles.length; i++) {
+      generateNewParticle();
+    }
   }
 
   if (!particles.length) return;
@@ -76,12 +127,15 @@ const updateLoop = () => {
     particle.y + particle.speed > canvasHeight;
 
   particles = particles.filter((particle) => {
-    if (particle.appearDate + particle.lifetime - currentDate > 300 && particle.opacity < 1) {
+    if (
+      particle.appearDate + particle.lifetime - currentDate > particle.lifetime / 6 &&
+      particle.opacity < maximalOpacity
+    ) {
       particle.opacity += 0.005;
     }
 
     // Change new particle position
-    particle.x += particle.sway;
+    particle.x += swayVariable == 0 ? 0 : particleDirection == "right" ? particle.sway : -particle.sway;
     particle.y += particle.speed;
 
     return particle.opacity > 0 && !isOutOfBounds(particle);
@@ -93,12 +147,14 @@ const drawLoop = () => {
   context.fillRect(0, 0, canvasWidth, canvasHeight);
 
   particles.forEach((particle) => {
-    const { red, green, blue } = hexToRGB(particlesColor);
+    if (particlesColor.length == 4 || particlesColor.length == 7) {
+      const { red, green, blue } = hexToRGB(particlesColor);
 
-    context.fillStyle = `rgba(${red}, ${green}, ${blue}, ${particle.opacity})`;
-    context.beginPath();
-    context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2, true);
-    context.fill();
+      context.fillStyle = `rgba(${red}, ${green}, ${blue}, ${particle.opacity})`;
+      context.beginPath();
+      context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2, true);
+      context.fill();
+    }
   });
 };
 
