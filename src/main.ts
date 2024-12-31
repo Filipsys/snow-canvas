@@ -112,22 +112,29 @@ const generateNewParticle = () => {
     id: numberOfTotalParticlesLogged,
     x:
       particleDirection == "right"
+        ? swayVariable != 0
+          ? coinToss >= 0.5
+            ? canvasWidth * Math.random()
+            : 0
+          : canvasWidth * Math.random()
+        : swayVariable != 0
         ? coinToss >= 0.5
           ? canvasWidth * Math.random()
-          : 0
-        : coinToss >= 0.5
-        ? canvasWidth * Math.random()
-        : canvasWidth,
+          : canvasWidth
+        : canvasWidth * Math.random(),
     y:
       particleDirection == "right"
+        ? speedVariable != 0
+          ? coinToss < 0.5
+            ? canvasHeight * Math.random()
+            : 0
+          : canvasHeight * Math.random()
+        : speedVariable != 0
         ? coinToss < 0.5
           ? canvasHeight * Math.random()
           : 0
-        : coinToss < 0.5
-        ? canvasHeight * Math.random()
-        : 0,
-
-    size: sizeVariable + (randomnessApply > 0 ? randomnessApply : -randomnessApply),
+        : canvasHeight * Math.random(),
+    size: sizeVariable + Math.abs(randomnessApply),
     opacity: 0,
     lifetime: lifetimeVariable,
     speed: speedVariable + randomnessApply,
@@ -137,9 +144,8 @@ const generateNewParticle = () => {
 };
 
 const updateLoop = () => {
-  // Check if a new particle should be made
   if (particles.length < amountVariable) {
-    for (let i = 0; i < amountVariable - particles.length; i++) {
+    for (let i = 0; i <= amountVariable - particles.length; i++) {
       generateNewParticle();
     }
   }
@@ -158,12 +164,13 @@ const updateLoop = () => {
       particle.appearDate + particle.lifetime - currentDate > particle.lifetime / 6 &&
       particle.opacity < maximalOpacity
     ) {
-      particle.opacity += 0.005;
+      particle.opacity += 0.01;
+    } else {
+      particle.opacity -= 0.01;
     }
 
-    // Change new particle position
     particle.x += swayVariable == 0 ? 0 : particleDirection == "right" ? particle.sway : -particle.sway;
-    particle.y += particle.speed;
+    particle.y += speedVariable == 0 ? 0 : particle.speed;
 
     return particle.opacity > 0 && !isOutOfBounds(particle);
   });
